@@ -119,22 +119,24 @@ export class DatabaseService {
       await DatabaseHelpers.executeTransaction(async (client) => {
         // Insert into loyalty_nfts table
         const nftQuery = `
-          INSERT INTO loyalty_nfts (user_id, token_id, transaction_hash)
+          INSERT INTO loyalty_nfts (token_id, owner_wallet_address, token_uri)
           VALUES ($1, $2, $3)
-          ON CONFLICT (user_id) DO NOTHING
+          ON CONFLICT (token_id) DO NOTHING
         `;
-        await client.query(nftQuery, [walletAddress.toLowerCase(), tokenId, transactionHash]);
+        await client.query(nftQuery, [tokenId, walletAddress.toLowerCase(), '']);
 
         // Insert initial attributes
         const attributesQuery = `
-          INSERT INTO nft_attributes (user_id, loyalty_points, tier_level)
-          VALUES ($1, $2, $3)
-          ON CONFLICT (user_id) DO UPDATE SET
+          INSERT INTO nft_attributes (nft_token_id, loyalty_level, loyalty_points, bank_tier, status_tier)
+          VALUES ($1, $2, $3, $4, $5)
+          ON CONFLICT (nft_token_id) DO UPDATE SET
+            loyalty_level = EXCLUDED.loyalty_level,
             loyalty_points = EXCLUDED.loyalty_points,
-            tier_level = EXCLUDED.tier_level,
-            updated_at = CURRENT_TIMESTAMP
+            bank_tier = EXCLUDED.bank_tier,
+            status_tier = EXCLUDED.status_tier,
+            last_updated = CURRENT_TIMESTAMP
         `;
-        await client.query(attributesQuery, [walletAddress.toLowerCase(), 0, 'Bronze']);
+        await client.query(attributesQuery, [tokenId, 1, 0, 'Standard', 'Bronze']);
       });
     } catch (error) {
       console.error('Error creating NFT record:', error);
@@ -145,11 +147,11 @@ export class DatabaseService {
   /**
    * Get complete NFT information for a user
    */
-  async getNFTCompleteInfo(walletAddress: string): Promise<NFTCompleteInfo | null> {
+  async getNFTCompleteInfo(walletAddress: string): Promise<any | null> {
     try {
       const query = `
-        SELECT * FROM nft_complete_info 
-        WHERE wallet_address = $1
+        SELECT * FROM nft_complete_info
+        WHERE owner_wallet_address = $1
       `;
       
       const result = await DatabaseHelpers.executeQuery(query, [walletAddress.toLowerCase()]);
