@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -26,7 +26,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
@@ -42,7 +42,7 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 app.use('/api', apiRoutes);
 
 // Health check endpoints
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: Request, res: Response) => {
   res.json({ 
     status: 'OK', 
     message: 'Backend server is running',
@@ -77,7 +77,7 @@ app.get('/api/health', (req, res) => {
  *       500:
  *         description: Database is unhealthy
  */
-app.get('/api/health/database', async (req, res) => {
+app.get('/api/health/database', async (req: Request, res: Response) => {
   try {
     const healthCheck = await DatabaseHelpers.healthCheck();
     res.json(healthCheck);
@@ -119,7 +119,7 @@ app.get('/api/health/database', async (req, res) => {
  *       500:
  *         description: Blockchain is not accessible
  */
-app.get('/api/health/blockchain', async (req, res) => {
+app.get('/api/health/blockchain', async (req: Request, res: Response) => {
   try {
     const healthCheck = await blockchainService.healthCheck();
     res.json(healthCheck);
@@ -133,7 +133,7 @@ app.get('/api/health/blockchain', async (req, res) => {
 });
 
 // Root endpoint
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.json({
     message: 'GomGom Loyalty System Backend API',
     version: '1.0.0',
@@ -143,7 +143,7 @@ app.get('/', (req, res) => {
 });
 
 // Error handling middleware
-app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   console.error('Unhandled error:', error);
   res.status(500).json({
     status: 'error',
@@ -153,7 +153,7 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({
     status: 'error',
     message: 'Route not found',
