@@ -1,0 +1,271 @@
+{
+  "info": {
+    "name": "GomGom Loyalty System API",
+    "description": "Backend API for the GomGom multi-brand loyalty system with blockchain NFTs",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Server Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Database Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health/database",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health", "database"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Blockchain Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health/blockchain",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health", "blockchain"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Initialize User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAddress\": \"0x742d35Cc6634C0532925a3b8D1e4DB4c926e9e01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/init",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "init"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "NFTs",
+      "item": [
+        {
+          "name": "Mint NFT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userAddress\": \"0x742d35Cc6634C0532925a3b8D1e4DB4c926e9e01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/nfts/mint",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "nfts", "mint"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User NFT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/nfts/user/{{walletAddress}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "nfts", "user", "{{walletAddress}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Actions",
+      "item": [
+        {
+          "name": "Simulate Vietjet Flight",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAddress\": \"0x742d35Cc6634C0532925a3b8D1e4DB4c926e9e01\",\n  \"actionType\": \"vietjet_flight_booking\",\n  \"details\": {\n    \"flightCode\": \"VJ123\",\n    \"pointsEarned\": 100,\n    \"route\": \"HCM-HAN\",\n    \"amount\": 2500000\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/actions/simulate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actions", "simulate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Simulate HDBank Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAddress\": \"0x742d35Cc6634C0532925a3b8D1e4DB4c926e9e01\",\n  \"actionType\": \"hdbank_transaction\",\n  \"details\": {\n    \"transactionId\": \"TXN123456\",\n    \"amount\": 1000000,\n    \"type\": \"purchase\",\n    \"merchant\": \"Local Store\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/actions/simulate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actions", "simulate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Simulate Dragon City Visit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAddress\": \"0x742d35Cc6634C0532925a3b8D1e4DB4c926e9e01\",\n  \"actionType\": \"dragon_city_visit\",\n  \"details\": {\n    \"visitId\": \"VISIT789\",\n    \"pointsEarned\": 50,\n    \"duration\": 120,\n    \"activities\": [\"shopping\", \"dining\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/actions/simulate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actions", "simulate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Action History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/actions/history/{{walletAddress}}?limit=10&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actions", "history", "{{walletAddress}}"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Perks",
+      "item": [
+        {
+          "name": "Get User Perks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/perks/user/{{walletAddress}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "perks", "user", "{{walletAddress}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Perks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/perks/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "perks", "all"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Perks by Brand",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/perks/brand/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "perks", "brand", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "walletAddress",
+      "value": "0x742d35Cc6634C0532925a3b8D1e4DB4c926e9e01",
+      "type": "string"
+    }
+  ]
+}

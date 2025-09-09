@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: gomgom-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: LISK_SEPOLIA_RPC_URL
+        fromDatabase: false
+        value: https://rpc.sepolia-api.lisk.com
+      - key: ADMIN_PRIVATE_KEY
+        fromDatabase: false
+        # Add your private key in Render dashboard
+      - key: NEXT_PUBLIC_CONTRACT_REGISTRY_ADDRESS
+        fromDatabase: false
+        value: 0xFA98fa90d3D57a41056D88501818AAb17196F41F
+      - key: NEXT_PUBLIC_CONTRACT_NFT_ADDRESS
+        fromDatabase: false
+        value: 0x2F38b52a71Ff031e2e31c33276626b944BE83499
+      - key: NEXT_PUBLIC_CONTRACT_STAKING_ADDRESS
+        fromDatabase: false
+        value: 0x23893653C04AC8442Fe0f9f5c1FB37fb39cB97A8
+      - key: PGHOST
+        fromDatabase: false
+        # Add your Neon.tech host in Render dashboard
+      - key: PGDATABASE
+        fromDatabase: false
+        # Add your Neon.tech database name
+      - key: PGUSER
+        fromDatabase: false
+        # Add your Neon.tech username
+      - key: PGPASSWORD
+        fromDatabase: false
+        # Add your Neon.tech password
+      - key: PGSSLMODE
+        fromDatabase: false
+        value: require
+      - key: NEON_DB_URL
+        fromDatabase: false
+        # Add your full Neon.tech connection URL
+      - key: JWT_SECRET
+        fromDatabase: false
+        # Add a secure JWT secret
+    domains:
+      - gomgom-backend.onrender.com
