@@ -17,6 +17,7 @@ export const GOMGOM_REGISTRY_ABI = [
 
 export const GOMGOM_NFT_ABI = [
   "function mint(address to) returns (uint256)",
+  "function mintWithURI(address to, string memory _tokenURI) returns (uint256)",
   "function balanceOf(address owner) view returns (uint256)",
   "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
   "function ownerOf(uint256 tokenId) view returns (address)",
@@ -91,6 +92,19 @@ export class BlockchainService {
   }
 
   /**
+   * Get total supply of NFTs
+   */
+  async getTotalSupply(): Promise<number> {
+    try {
+      const totalSupply = await this.nftContract.totalSupply();
+      return totalSupply.toNumber();
+    } catch (error) {
+      console.error('Error getting total supply:', error);
+      return 0;
+    }
+  }
+
+  /**
    * Check if user owns an NFT
    */
   async userOwnsNFT(userAddress: string): Promise<boolean> {
@@ -155,6 +169,53 @@ export class BlockchainService {
       };
     } catch (error) {
       console.error('Error minting NFT:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Mint an NFT with custom URI for a user
+   */
+  async mintNFTWithURI(userAddress: string, tokenURI: string): Promise<{ tokenId: number; transactionHash: string }> {
+    try {
+      console.log(`Minting NFT with URI for user: ${userAddress}`);
+      console.log(`Token URI: ${tokenURI}`);
+      
+      // Check if user already owns an NFT
+      const ownsNFT = await this.userOwnsNFT(userAddress);
+      if (ownsNFT) {
+        throw new Error('User already owns an NFT');
+      }
+
+      // Validate token URI
+      if (!tokenURI || tokenURI.trim().length === 0) {
+        throw new Error('Token URI cannot be empty');
+      }
+
+      // Get current total supply to predict the next token ID
+      const currentSupply = await this.nftContract.totalSupply();
+      const expectedTokenId = currentSupply.toNumber() + 1;
+
+      // Mint the NFT with custom URI
+      const tx = await this.nftContract.mintWithURI(userAddress, tokenURI);
+      console.log('Mint with URI transaction sent:', tx.hash);
+
+      // Wait for transaction confirmation
+      const receipt = await tx.wait();
+      console.log('Mint with URI transaction confirmed:', receipt.transactionHash);
+
+      // Get the actual token ID from the Transfer event
+      const transferEvent = receipt.events?.find((event: any) => event.event === 'Transfer');
+      const tokenId = transferEvent?.args?.tokenId?.toNumber() || expectedTokenId;
+
+      console.log(`NFT minted successfully: Token ID ${tokenId} with URI ${tokenURI}`);
+
+      return {
+        tokenId,
+        transactionHash: receipt.transactionHash
+      };
+    } catch (error) {
+      console.error('Error minting NFT with URI:', error);
       throw error;
     }
   }

@@ -22,7 +22,7 @@ services:
         value: 0xFA98fa90d3D57a41056D88501818AAb17196F41F
       - key: NEXT_PUBLIC_CONTRACT_NFT_ADDRESS
         fromDatabase: false
-        value: 0x2F38b52a71Ff031e2e31c33276626b944BE83499
+        value: 0xd33F3f8Eb434663E3e9ea331bA910faa439dc246
       - key: NEXT_PUBLIC_CONTRACT_STAKING_ADDRESS
         fromDatabase: false
         value: 0x23893653C04AC8442Fe0f9f5c1FB37fb39cB97A8

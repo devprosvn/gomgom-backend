@@ -46,6 +46,59 @@ export interface UserAction {
 export class DatabaseService {
   
   /**
+   * Execute a database query directly
+   */
+  async executeQuery(query: string, params?: any[]): Promise<any> {
+    return await DatabaseHelpers.executeQuery(query, params);
+  }
+
+  /**
+   * Get NFT metadata for dynamic API endpoint
+   */
+  async getNFTMetadata(tokenId: number): Promise<any | null> {
+    try {
+      const query = `
+        SELECT 
+          ln.token_id,
+          ln.owner_wallet_address,
+          ln.minted_at,
+          COALESCE(na.loyalty_level, 0) as loyalty_level,
+          COALESCE(na.loyalty_points, 0) as loyalty_points,
+          COALESCE(na.flights_taken, 0) as flights_taken,
+          COALESCE(na.bank_tier, 'Standard') as bank_tier,
+          COALESCE(na.resorts_visited, 0) as resorts_visited,
+          COALESCE(na.total_spending, 0.00) as total_spending,
+          COALESCE(na.miles_earned, 0) as miles_earned,
+          COALESCE(na.status_tier, 'Bronze') as status_tier,
+          COALESCE(na.last_updated, ln.minted_at) as last_updated
+        FROM loyalty_nfts ln
+        LEFT JOIN nft_attributes na ON ln.token_id = na.nft_token_id
+        WHERE ln.token_id = $1
+      `;
+      
+      const result = await DatabaseHelpers.executeQuery(query, [tokenId]);
+      return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+      console.error('Error getting NFT metadata:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update loyalty level for a specific NFT
+   */
+  async updateLoyaltyLevel(tokenId: number): Promise<number> {
+    try {
+      const query = 'SELECT calculate_and_update_loyalty_level($1) as new_level';
+      const result = await DatabaseHelpers.executeQuery(query, [tokenId]);
+      return result.rows[0]?.new_level || 0;
+    } catch (error) {
+      console.error('Error updating loyalty level:', error);
+      throw error;
+    }
+  }
+  
+  /**
    * Initialize or get existing user
    */
   async initUser(walletAddress: string): Promise<{ status: string; message: string; user?: User }> {
@@ -114,16 +167,30 @@ export class DatabaseService {
   /**
    * Create NFT record after successful minting
    */
-  async createNFTRecord(walletAddress: string, tokenId: number, transactionHash: string): Promise<void> {
+  async createNFTRecord(
+    walletAddress: string, 
+    tokenId: number, 
+    transactionHash: string,
+    ipfsMetadata?: {
+      name?: string;
+      description?: string;
+      imageHash?: string;
+      metadataHash?: string;
+      tokenUri?: string;
+      attributes?: Array<{ trait_type: string; value: any }>;
+    }
+  ): Promise<void> {
     try {
       await DatabaseHelpers.executeTransaction(async (client) => {
-        // Insert into loyalty_nfts table
+        // Insert into loyalty_nfts table with IPFS data
         const nftQuery = `
           INSERT INTO loyalty_nfts (token_id, owner_wallet_address, token_uri)
           VALUES ($1, $2, $3)
-          ON CONFLICT (token_id) DO NOTHING
+          ON CONFLICT (token_id) DO UPDATE SET
+            token_uri = EXCLUDED.token_uri
         `;
-        await client.query(nftQuery, [tokenId, walletAddress.toLowerCase(), '']);
+        const tokenUri = ipfsMetadata?.tokenUri || '';
+        await client.query(nftQuery, [tokenId, walletAddress.toLowerCase(), tokenUri]);
 
         // Insert initial attributes
         const attributesQuery = `
@@ -137,6 +204,18 @@ export class DatabaseService {
             last_updated = CURRENT_TIMESTAMP
         `;
         await client.query(attributesQuery, [tokenId, 1, 0, 'Standard', 'Bronze']);
+
+        // If IPFS metadata is provided, log it for future reference
+        if (ipfsMetadata) {
+          console.log(`NFT ${tokenId} created with IPFS metadata:`, {
+            name: ipfsMetadata.name,
+            description: ipfsMetadata.description,
+            imageHash: ipfsMetadata.imageHash,
+            metadataHash: ipfsMetadata.metadataHash,
+            tokenUri: ipfsMetadata.tokenUri,
+            attributesCount: ipfsMetadata.attributes?.length || 0
+          });
+        }
       });
     } catch (error) {
       console.error('Error creating NFT record:', error);

@@ -75,7 +75,7 @@ NEON_DB_URL=postgresql://user:pass@host:5432/db?sslmode=require
 LISK_SEPOLIA_RPC_URL=https://rpc.sepolia-api.lisk.com
 ADMIN_PRIVATE_KEY=0x_your_private_key_here
 NEXT_PUBLIC_CONTRACT_REGISTRY_ADDRESS=0xFA98fa90d3D57a41056D88501818AAb17196F41F
-NEXT_PUBLIC_CONTRACT_NFT_ADDRESS=0x2F38b52a71Ff031e2e31c33276626b944BE83499
+NEXT_PUBLIC_CONTRACT_NFT_ADDRESS=0xd33F3f8Eb434663E3e9ea331bA910faa439dc246
 NEXT_PUBLIC_CONTRACT_STAKING_ADDRESS=0x23893653C04AC8442Fe0f9f5c1FB37fb39cB97A8
 
 # Security
@@ -138,7 +138,7 @@ The backend integrates with three main smart contracts on Lisk Sepolia:
    - Central access control and contract management
    - Role-based permissions for minting and updates
 
-2. **GomGomNFT** (`0x2F38b52a71Ff031e2e31c33276626b944BE83499`)
+2. **GomGomNFT** (`0xd33F3f8Eb434663E3e9ea331bA910faa439dc246`)
    - ERC721 loyalty NFTs with dynamic metadata
    - Burn protection for staked tokens
 

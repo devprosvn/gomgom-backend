@@ -49,7 +49,7 @@ export function loadConfig(): AppConfig {
   }
 
   return {
-    port: parseInt(process.env.PORT || '3001'),
+    port: parseInt(process.env.PORT || '3002'),
     nodeEnv: process.env.NODE_ENV || 'development',
     database: {
       host: process.env.PGHOST || 'localhost',
